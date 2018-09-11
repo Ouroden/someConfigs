@@ -1,5 +1,3 @@
-
-
 " load color scheme from ~/.config/nvim/colors/
 "https://github.com/Ardakilic/vim-tomorrow-night-theme/blob/master/colors/Tomorrow-Night.vim
 colorscheme Tomorrow-Night
@@ -90,6 +88,7 @@ syntax sync minlines=256
 " let g:python_host_prog = "/opt/python/x86_64/2.6.6/bin-wrapped/python"
 " let g:python3_host_prog = '/opt/python/x86_64/3.6.0/bin-wrapped/python'
 
+" let g:python3_host_prog = "/opt/python/x86_64/3.5.1/bin-wrapped/python"
 
 "let &path.="src/include,/usr/include/AL,/usr/include/c++/4.4.7,/$HOME/gnuglobal/6.5.2/bin,/var/fpwork/$USER/trunk/C_Test/**,/var/fpwork/$USER/trunk/C_Application/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Application_Env/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Private/**,,"
 "set makeprg=make\ -C\ ../build\ -j9
@@ -137,9 +136,11 @@ Plug 'maximbaz/lightline-ale'
 Plug 'itchyny/lightline.vim'
 
 let g:lightline = {
+\  'colorscheme': 'powerline',
 \  'active': {
 \    'left': [ [ 'mode', 'paste' ],
-\              [ 'filename' ], [ 'bufferline' ]
+\              [ 'readonly', 'filename', 'modified' ],
+\              [ 'dir' ], [ 'bufferline' ]
 \            ],
 \   'right': [ [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ],
 \              [ 'percent' ],
@@ -161,9 +162,42 @@ let g:lightline = {
 \    'linter_warnings': 'warning',
 \    'linter_errors': 'error',
 \    'linter_ok': 'left',
+\  },
+\  'component_function': {
+\    'dir': 'LightLineDirFilename'
 \  }
 \}
 
+function! LightLineFullFilename()
+  return expand('%:p')
+endfunction
+
+function! LightLineRelFilename()
+  return expand('%')
+endfunction
+
+function! LightLineDirFilename()
+  return expand('%:p:h')
+endfunction
+
+
+function! LightLineAbbrFilename()
+	let name = ""
+	let subs = split(expand('%'), "/") 
+	let i = 1
+	for s in subs
+		let parent = name
+		if  i == len(subs)
+			let name = parent . '/' . s
+		elseif i == 1
+			let name = s
+		else
+			let name = parent . '/' . strpart(s, 0, 2)
+		endif
+		let i += 1
+	endfor
+  return name
+endfunction
 
 " ----- Completion framework ----- "
 "  Requires: if_python3 - check with :echo has("python3") -> community/python-neovim 
